@@ -8,8 +8,10 @@
         android:id="@+id/gv_recipes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:columnWidth="@dimen/recipe_column_width"
+        android:horizontalSpacing="10dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:columnWidth="@dimen/recipe_column_width"
+        android:verticalSpacing="10dp"
         />
 </FrameLayout>

@@ -10,22 +10,32 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Ingredient implements Parcelable {
-    private Integer quantity;
+    public static final Parcelable.Creator<Ingredient> CREATOR = new Parcelable.Creator<Ingredient>() {
+        public Ingredient createFromParcel(Parcel in) {
+            return new Ingredient(in);
+        }
+
+        public Ingredient[] newArray(int size) {
+            return new Ingredient[size];
+        }
+    };
+    private Float quantity;
     private String measure;
     @SerializedName("ingredient")
     private String name;
-
     // Required by Parcelable
     public Ingredient(Parcel in) {
-        this.quantity = in.readInt();
+        this.quantity = in.readFloat();
         this.measure = in.readString();
         this.name = in.readString();
     }
-    public Ingredient(int quantity, String measure, String name) {
+
+    public Ingredient(float quantity, String measure, String name) {
         this.quantity = quantity;
         this.measure = measure;
         this.name = name;
     }
+
     @Override
     public int describeContents() {
         return this.hashCode();
@@ -33,25 +43,16 @@ public class Ingredient implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(quantity);
+        parcel.writeFloat(quantity);
         parcel.writeString(measure);
         parcel.writeString(name);
     }
 
-    public static final Parcelable.Creator<Ingredient> CREATOR = new Parcelable.Creator<Ingredient>() {
-        public Ingredient createFromParcel(Parcel in) {
-            return new Ingredient(in);
-        }
-        public Ingredient[] newArray(int size) {
-            return new Ingredient[size];
-        }
-    };
-
-    public Integer getQuantity() {
+    public Float getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Float quantity) {
         this.quantity = quantity;
     }
 
