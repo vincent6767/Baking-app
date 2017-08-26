@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.adapters.IngredientsAdapter;
+import com.example.android.bakingapp.adapters.RecipeStepsAdapter;
 import com.example.android.bakingapp.entities.Recipe;
 
 public class RecipeMasterListFragment extends Fragment {
@@ -19,7 +20,9 @@ public class RecipeMasterListFragment extends Fragment {
     private static final String SELECTED_RECIPE_KEY = "selectedRecipe";
     private Recipe mRecipe;
     private IngredientsAdapter mIngredientsAdapter;
-    private RecyclerView ingredientRecylcerView;
+    private RecyclerView mIngredientRecylcerView;
+    private RecipeStepsAdapter mRecipeStepsAdapter;
+    private RecyclerView mRecipeStepsRecyclerView;
 
     public RecipeMasterListFragment() {
     }
@@ -30,7 +33,11 @@ public class RecipeMasterListFragment extends Fragment {
         mRecipe = ((RecipeDetailActivity) getActivity()).getRecipe();
 
         mIngredientsAdapter = new IngredientsAdapter(getActivity().getApplicationContext(), mRecipe.getIngredients());
-        ingredientRecylcerView.setAdapter(mIngredientsAdapter);
+        mIngredientRecylcerView.setAdapter(mIngredientsAdapter);
+
+        mRecipeStepsAdapter = new RecipeStepsAdapter(getActivity().getApplicationContext(), mRecipe.getSteps());
+        Log.d(LOG_TAG, String.format("Number of steps: %d", mRecipeStepsAdapter.getItemCount()));
+        mRecipeStepsRecyclerView.setAdapter(mRecipeStepsAdapter);
         Log.d(LOG_TAG, "onActivityCreated");
     }
 
@@ -39,10 +46,27 @@ public class RecipeMasterListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_recipe_master_list, container, false);
 
-        ingredientRecylcerView = rootView.findViewById(R.id.rv_ingredients_list);
-        ingredientRecylcerView.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, true);
-        ingredientRecylcerView.setLayoutManager(layoutManager);
+        mIngredientRecylcerView = rootView.findViewById(R.id.rv_ingredients_list);
+        mIngredientRecylcerView.setHasFixedSize(true);
+        LinearLayoutManager ingredientLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public boolean canScrollHorizontally() {
+                return false;
+            }
+
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        mIngredientRecylcerView.setLayoutManager(ingredientLayoutManager);
+
+        mRecipeStepsRecyclerView = rootView.findViewById(R.id.rv_recipe_steps_list);
+        mRecipeStepsRecyclerView.setHasFixedSize(true);
+        NoScrollbarLinearLayoutManager recipeStepLayoutManager = new NoScrollbarLinearLayoutManager(getActivity().getApplicationContext());
+        recipeStepLayoutManager.setScrollEnabled(false);
+
+        mRecipeStepsRecyclerView.setLayoutManager(recipeStepLayoutManager);
 
         Log.d(LOG_TAG, "onCreateView");
         return rootView;

@@ -31,8 +31,8 @@ public class IngredientsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         IngredientViewHolder ingredientViewHolder = (IngredientViewHolder) holder;
 
-        ingredientViewHolder.nameTextView.setText(mIngredients.get(position).getName());
-        ingredientViewHolder.qtyStringTextView.setText(String.valueOf(mIngredients.get(position).getQtyString()));
+        ingredientViewHolder.mNameTextView.setText(mIngredients.get(position).getName());
+        ingredientViewHolder.mQtyStringTextView.setText(String.valueOf(mIngredients.get(position).getQtyString()));
     }
 
     @Override
@@ -48,14 +48,14 @@ public class IngredientsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public class IngredientViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView;
-        TextView qtyStringTextView;
+    class IngredientViewHolder extends RecyclerView.ViewHolder {
+        TextView mNameTextView;
+        TextView mQtyStringTextView;
 
         public IngredientViewHolder(View itemView) {
             super(itemView);
-            nameTextView = itemView.findViewById(R.id.tv_ingredient_name);
-            qtyStringTextView = itemView.findViewById(R.id.tv_ingredient_qty_string);
+            mNameTextView = itemView.findViewById(R.id.tv_ingredient_name);
+            mQtyStringTextView = itemView.findViewById(R.id.tv_ingredient_qty_string);
         }
     }
 }
