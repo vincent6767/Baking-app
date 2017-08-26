@@ -5,9 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by vincent on 8/21/17.
- */
+import java.util.Locale;
 
 public class Ingredient implements Parcelable {
     public static final Parcelable.Creator<Ingredient> CREATOR = new Parcelable.Creator<Ingredient>() {
@@ -24,7 +22,7 @@ public class Ingredient implements Parcelable {
     @SerializedName("ingredient")
     private String name;
     // Required by Parcelable
-    public Ingredient(Parcel in) {
+    private Ingredient(Parcel in) {
         this.quantity = in.readFloat();
         this.measure = in.readString();
         this.name = in.readString();
@@ -73,5 +71,9 @@ public class Ingredient implements Parcelable {
     }
     public String getFullDescription() {
         return String.format("%s: %s %s", getName(), getQuantity(), getMeasure());
+    }
+
+    public String getQtyString() {
+        return String.format(Locale.US, "%.1f %s", getQuantity(), getMeasure());
     }
 }
