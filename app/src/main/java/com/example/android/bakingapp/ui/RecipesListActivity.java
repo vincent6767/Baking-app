@@ -1,12 +1,12 @@
 package com.example.android.bakingapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.adapters.RecipesAdapter;
@@ -23,6 +23,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RecipesListActivity extends AppCompatActivity {
+    public static final String SELECTED_RECIPE_KEY = "recipe";
+
     private static final String TAG = RecipesListActivity.class.getSimpleName();
     private static final String RECIPE_BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
     private static final String GRID_VIEW_CURRENT_POSITION_KEY = "gridViewCurrentPositionKey";
@@ -63,7 +65,9 @@ public class RecipesListActivity extends AppCompatActivity {
         mRecipesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(RecipesListActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+                Intent recipeDetailIntent = new Intent(getApplicationContext(), RecipeDetailActivity.class);
+                recipeDetailIntent.putExtra(SELECTED_RECIPE_KEY, mRecipesAdapter.getItem(position));
+                startActivity(recipeDetailIntent);
             }
         });
     }

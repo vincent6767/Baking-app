@@ -7,5 +7,14 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <!-- Recipe Master List Fragment Title style -->
+    <style name="RecipeMasterListFragmentTitle">
+        <item name="android:textSize">@dimen/recipe_detail_title</item>
+        <item name="android:layout_marginTop">@dimen/fragment_recipe_master_list_margin_vertical
+        </item>
+        <item name="android:layout_marginBottom">
+            @dimen/fragment_recipe_master_list_margin_vertical
+        </item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Title</item>
+    </style>
 </resources>

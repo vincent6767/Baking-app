@@ -32,7 +32,7 @@ public class RecipesAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Recipe getItem(int position) {
         return mRecipes.get(position);
     }
 

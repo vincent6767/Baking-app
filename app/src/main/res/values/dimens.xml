@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="recipe_column_width">200dp</dimen>
+    <dimen name="recipe_detail_title">25sp</dimen>
+    <dimen name="fragment_recipe_master_list_margin_vertical">10dp</dimen>
 </resources>

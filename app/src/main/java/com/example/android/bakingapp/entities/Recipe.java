@@ -3,6 +3,7 @@ package com.example.android.bakingapp.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,21 +11,33 @@ import java.util.List;
  */
 
 public class Recipe implements Parcelable {
+    public static final Parcelable.Creator<Recipe> CREATOR = new Parcelable.Creator<Recipe>() {
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
     private Integer id;
     private String name;
     private List<Ingredient> ingredients;
     private List<RecipeStep> steps;
     private Integer servings;
     private String image;
-
     public Recipe (Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
         this.servings = in.readInt();
         this.image = in.readString();
+        this.ingredients = new ArrayList<>();
+        this.steps = new ArrayList<>();
+
         in.readTypedList(this.ingredients, Ingredient.CREATOR);
         in.readTypedList(this.steps, RecipeStep.CREATOR);
     }
+
     public Integer getId() {
         return id;
     }
@@ -68,18 +81,12 @@ public class Recipe implements Parcelable {
     public void setImage(String image) {
         this.image = image;
     }
+
     @Override
     public int describeContents() {
         return this.hashCode();
     }
-    public static final Parcelable.Creator<Recipe> CREATOR = new Parcelable.Creator<Recipe>() {
-        public Recipe createFromParcel(Parcel in) {
-            return new Recipe(in);
-        }
-        public Recipe[] newArray(int size) {
-            return new Recipe[size];
-        }
-    };
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
