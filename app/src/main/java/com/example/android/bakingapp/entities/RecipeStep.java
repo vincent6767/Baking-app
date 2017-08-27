@@ -1,5 +1,6 @@
 package com.example.android.bakingapp.entities;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -71,6 +72,13 @@ public class RecipeStep implements Parcelable {
         this.videoURL = videoURL;
     }
 
+    public Uri getVideoUri() {
+        return Uri.parse(getVideoURL());
+    }
+
+    public boolean hasVideo() {
+        return (getVideoURL() != null && !getVideoURL().isEmpty());
+    }
     @Nullable
     public String getThumbnailURL() {
         return thumbnailURL;
@@ -80,6 +88,9 @@ public class RecipeStep implements Parcelable {
         this.thumbnailURL = thumbnailURL;
     }
 
+    public boolean hasThumbnailURL() {
+        return (getThumbnailURL() != null);
+    }
     @Override
     public int describeContents() {
         return this.hashCode();

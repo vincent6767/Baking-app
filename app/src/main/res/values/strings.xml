@@ -5,4 +5,5 @@
     <string name="recipe_image_preview">Recipe image preview</string>
     <string name="title_recipe_step_detail_activity_display_message">Recipe StepDetail Activity</string>
     <string name="title_recipe_detail_activity_activity_display_message">Recipe Detail Activity</string>
+    <string name="no_video_available_message">No video available</string>
 </resources>

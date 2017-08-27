@@ -9,4 +9,5 @@
     <dimen name="list_recipe_step_item_recipe_step_short_description_size">20sp</dimen>
     <dimen name="fragment_recipe_step_detail_recipe_step_description_margin_top">20dp</dimen>
     <dimen name="fragment_recipe_step_detail_layout_padding">17dp</dimen>
+    <dimen name="recipe_step_video_height">280dp</dimen>
 </resources>
