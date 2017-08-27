@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    tools:context=".ui.RecipeDetailActivity">
+    <!-- The static MasterListFragment -->
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recipe_master_list_fragment"
+        android:name="com.example.android.bakingapp.ui.RecipeMasterListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+    <!-- A small divider -->
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray" />
+    <!-- Linear layout for holding RecipeStepDetail -->
+    <LinearLayout
+        android:id="@+id/recipe_step_detail_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/fragment_recipe_step_detail_layout_padding">
+        <!-- This container holds the Media Player and the step description-->
+        <FrameLayout
+            android:id="@+id/recipe_step_detail_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside" />
+    </LinearLayout>
+</LinearLayout>

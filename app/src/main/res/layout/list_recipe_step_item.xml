@@ -6,13 +6,11 @@
 
     <TextView
         android:id="@+id/tv_recipe_step_short_description"
+        style="@style/RecipeStepDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
-        android:padding="@dimen/list_recipe_step_item_recipe_step_padding"
-        android:text="Step 1"
-        android:textSize="@dimen/list_recipe_step_item_recipe_step_short_description_size"
-        android:textStyle="bold" />
+        android:padding="@dimen/list_recipe_step_item_recipe_step_padding" />
 
     <View
         android:layout_width="match_parent"

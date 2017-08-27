@@ -4,11 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
-/**
- * Created by vincent on 8/21/17.
- */
+import java.util.Locale;
 
 public class RecipeStep implements Parcelable {
+    public static final Parcelable.Creator<RecipeStep> CREATOR = new Parcelable.Creator<RecipeStep>() {
+        public RecipeStep createFromParcel(Parcel in) {
+            return new RecipeStep(in);
+        }
+
+        public RecipeStep[] newArray(int size) {
+            return new RecipeStep[size];
+        }
+    };
     private Integer id;
     private String shortDescription;
     private String description;
@@ -16,7 +23,6 @@ public class RecipeStep implements Parcelable {
     private String videoURL;
     @Nullable
     private String thumbnailURL;
-
     public RecipeStep(Parcel in) {
         this.id = in.readInt();
         this.shortDescription = in.readString();
@@ -27,15 +33,25 @@ public class RecipeStep implements Parcelable {
     public RecipeStep() {
         super();
     }
+
     public Integer getId() {
         return id;
     }
+
     public String getShortDescription() {
         return shortDescription;
     }
 
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
+    }
+
+    public String getShortDescriptionWithOrderNumber() {
+        if (getId() > 0) {
+            return String.format(Locale.US, "%d. %s", getId(), getShortDescription());
+        } else {
+            return String.format(Locale.US, "%s", getShortDescription());
+        }
     }
 
     public String getDescription() {
@@ -63,14 +79,7 @@ public class RecipeStep implements Parcelable {
     public void setThumbnailURL(@Nullable String thumbnailURL) {
         this.thumbnailURL = thumbnailURL;
     }
-    public static final Parcelable.Creator<RecipeStep> CREATOR = new Parcelable.Creator<RecipeStep>() {
-        public RecipeStep createFromParcel(Parcel in) {
-            return new RecipeStep(in);
-        }
-        public RecipeStep[] newArray(int size) {
-            return new RecipeStep[size];
-        }
-    };
+
     @Override
     public int describeContents() {
         return this.hashCode();

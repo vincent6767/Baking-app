@@ -17,4 +17,11 @@
         </item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Title</item>
     </style>
+
+    <style name="RecipeStepDescription">
+        <item name="android:textSize">
+            @dimen/list_recipe_step_item_recipe_step_short_description_size
+        </item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

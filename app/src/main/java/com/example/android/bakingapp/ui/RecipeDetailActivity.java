@@ -15,6 +15,9 @@ import com.example.android.bakingapp.entities.RecipeStep;
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeMasterListFragment.OnInitializationListener, RecipeStepsAdapter.OnRecipeStepClickListener {
     private static final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
     private Recipe mRecipe;
+    // TODO: Preserve in OnSavedInstanceState
+    private RecipeStep mSelectedRecipeStep;
+    private boolean mTwoPane;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,8 +34,18 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeMas
         if (actionBar != null) {
             actionBar.setTitle(mRecipe.getName());
         }
-    }
+        mTwoPane = (findViewById(R.id.recipe_step_detail_linear_layout) != null);
 
+        if (mTwoPane) {
+            // Only Create new fragments when there is no previously saved state.
+            if (savedInstanceState == null && mSelectedRecipeStep != null) {
+                RecipeStepDetailFragment recipeStepDetailFragment = RecipeStepDetailFragment.newInstance(mSelectedRecipeStep);
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.recipe_step_detail_container, recipeStepDetailFragment)
+                        .commit();
+            }
+        }
+    }
     @Override
     public Recipe getInitialRecipe() {
         return mRecipe;
@@ -40,10 +53,18 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeMas
 
     @Override
     public void onRecipeStepSelected(RecipeStep recipeStep) {
-        Intent startRecipeStepDetailActivityIntent = new Intent(getApplicationContext(), RecipeStepDetailActivity.class);
-        startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_STEP_KEY, recipeStep);
-        startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_NAME_KEY, mRecipe.getName());
-        Log.d(LOG_TAG, "Starting Recipe Step Detail Intent");
-        startActivity(startRecipeStepDetailActivityIntent);
+        mSelectedRecipeStep = recipeStep;
+        if (!mTwoPane) {
+            Intent startRecipeStepDetailActivityIntent = new Intent(getApplicationContext(), RecipeStepDetailActivity.class);
+            startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_STEP_KEY, mSelectedRecipeStep);
+            startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_NAME_KEY, mRecipe.getName());
+            Log.d(LOG_TAG, "Starting Recipe Step Detail Intent");
+            startActivity(startRecipeStepDetailActivityIntent);
+        } else if (mSelectedRecipeStep != null) {
+            RecipeStepDetailFragment recipeStepDetailFragment = RecipeStepDetailFragment.newInstance(mSelectedRecipeStep);
+            getSupportFragmentManager().beginTransaction().replace(R.id.recipe_step_detail_container, recipeStepDetailFragment).commit();
+        } else {
+            Log.d(LOG_TAG, "Passed Recipe Step value is null");
+        }
     }
 }

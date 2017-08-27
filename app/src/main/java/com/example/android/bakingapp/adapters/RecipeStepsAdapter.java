@@ -32,7 +32,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         RecipeStepViewHolder recipeStepViewHolder = (RecipeStepViewHolder) holder;
-        recipeStepViewHolder.mShortDescriptionTextView.setText(mRecipeSteps.get(position).getShortDescription());
+        recipeStepViewHolder.mShortDescriptionTextView.setText(mRecipeSteps.get(position).getShortDescriptionWithOrderNumber());
     }
 
     @Override

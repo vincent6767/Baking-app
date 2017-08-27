@@ -12,6 +12,7 @@
 
     <TextView
         android:id="@+id/tv_recipe_step_description"
+        style="@style/RecipeStepDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fragment_recipe_step_detail_recipe_step_description_margin_top" />
