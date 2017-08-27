@@ -7,4 +7,5 @@
     <dimen name="list_ingredient_item_ingredient_item_margin_bottom">10dp</dimen>
     <dimen name="list_recipe_step_item_recipe_step_padding">17dp</dimen>
     <dimen name="list_recipe_step_item_recipe_step_short_description_size">20sp</dimen>
+    <dimen name="fragment_recipe_step_detail_recipe_step_description_margin_top">20dp</dimen>
 </resources>

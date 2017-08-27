@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.adapters.RecipeStepsAdapter;
 import com.example.android.bakingapp.entities.Recipe;
+import com.example.android.bakingapp.entities.RecipeStep;
 
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeMasterListFragment.OnInitializationListener, RecipeStepsAdapter.OnRecipeStepClickListener {
     private static final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
     private Recipe mRecipe;
 
@@ -23,14 +26,24 @@ public class RecipeDetailActivity extends AppCompatActivity {
         if (intentThatStartedThisActivity != null) {
             if (intentThatStartedThisActivity.hasExtra(RecipesListActivity.SELECTED_RECIPE_KEY)) {
                 mRecipe = intentThatStartedThisActivity.getParcelableExtra(RecipesListActivity.SELECTED_RECIPE_KEY);
-                if (mRecipe != null) actionBar.setTitle(mRecipe.getName());
             }
         }
-
-        // Do nothing.
+        if (actionBar != null) {
+            actionBar.setTitle(mRecipe.getName());
+        }
     }
 
-    public Recipe getRecipe() {
+    @Override
+    public Recipe getInitialRecipe() {
         return mRecipe;
+    }
+
+    @Override
+    public void onRecipeStepSelected(RecipeStep recipeStep) {
+        Intent startRecipeStepDetailActivityIntent = new Intent(getApplicationContext(), RecipeStepDetailActivity.class);
+        startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_STEP_KEY, recipeStep);
+        startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_NAME_KEY, mRecipe.getName());
+        Log.d(LOG_TAG, "Starting Recipe Step Detail Intent");
+        startActivity(startRecipeStepDetailActivityIntent);
     }
 }

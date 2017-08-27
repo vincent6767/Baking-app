@@ -3,4 +3,6 @@
     <string name="ingredients_title">Ingredients</string>
     <string name="recipe_steps_title">Recipe Steps</string>
     <string name="recipe_image_preview">Recipe image preview</string>
+    <string name="title_recipe_step_detail_activity_display_message">Recipe StepDetail Activity</string>
+    <string name="title_recipe_detail_activity_activity_display_message">Recipe Detail Activity</string>
 </resources>

@@ -18,6 +18,7 @@ import com.example.android.bakingapp.entities.Recipe;
 public class RecipeMasterListFragment extends Fragment {
     private static final String LOG_TAG = RecipeMasterListFragment.class.getSimpleName();
     private static final String SELECTED_RECIPE_KEY = "selectedRecipe";
+
     private Recipe mRecipe;
     private IngredientsAdapter mIngredientsAdapter;
     private RecyclerView mIngredientRecylcerView;
@@ -30,14 +31,23 @@ public class RecipeMasterListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mRecipe = ((RecipeDetailActivity) getActivity()).getRecipe();
+        if (mRecipe == null) {
+            try {
+                OnInitializationListener listener = (OnInitializationListener) getActivity();
+                mRecipe = listener.getInitialRecipe();
 
-        mIngredientsAdapter = new IngredientsAdapter(getActivity().getApplicationContext(), mRecipe.getIngredients());
-        mIngredientRecylcerView.setAdapter(mIngredientsAdapter);
-
-        mRecipeStepsAdapter = new RecipeStepsAdapter(getActivity().getApplicationContext(), mRecipe.getSteps());
-        Log.d(LOG_TAG, String.format("Number of steps: %d", mRecipeStepsAdapter.getItemCount()));
-        mRecipeStepsRecyclerView.setAdapter(mRecipeStepsAdapter);
+                mIngredientsAdapter = new IngredientsAdapter(getActivity().getApplicationContext(), mRecipe.getIngredients());
+                mIngredientRecylcerView.setAdapter(mIngredientsAdapter);
+                try {
+                    mRecipeStepsAdapter = new RecipeStepsAdapter(getActivity().getApplicationContext(), mRecipe.getSteps(), (RecipeStepsAdapter.OnRecipeStepClickListener) getActivity());
+                    mRecipeStepsRecyclerView.setAdapter(mRecipeStepsAdapter);
+                } catch (ClassCastException e) {
+                    Log.d(LOG_TAG, "Attached activity didn't implement OnRecipeStepClickListener");
+                }
+            } catch (ClassCastException e) {
+                Log.d(LOG_TAG, "Attached Activity didn't implement OnInitializationListener");
+            }
+        }
         Log.d(LOG_TAG, "onActivityCreated");
     }
 
@@ -64,11 +74,14 @@ public class RecipeMasterListFragment extends Fragment {
         mRecipeStepsRecyclerView = rootView.findViewById(R.id.rv_recipe_steps_list);
         mRecipeStepsRecyclerView.setHasFixedSize(true);
         NoScrollbarLinearLayoutManager recipeStepLayoutManager = new NoScrollbarLinearLayoutManager(getActivity().getApplicationContext());
-        recipeStepLayoutManager.setScrollEnabled(false);
 
         mRecipeStepsRecyclerView.setLayoutManager(recipeStepLayoutManager);
 
         Log.d(LOG_TAG, "onCreateView");
         return rootView;
+    }
+
+    public interface OnInitializationListener {
+        Recipe getInitialRecipe();
     }
 }

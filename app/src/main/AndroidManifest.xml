@@ -22,8 +22,21 @@
         </activity>
         <activity
             android:name=".ui.RecipeDetailActivity"
-            android:label="RecipeDetailActivity"
-            android:parentActivityName=".ui.RecipesListActivity" />
+            android:label="@string/title_recipe_detail_activity_activity_display_message"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.RecipesListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.RecipesListActivity" />
+        </activity>
+        <activity
+            android:name=".ui.RecipeStepDetailActivity"
+            android:label="@string/title_recipe_step_detail_activity_display_message"
+            android:parentActivityName=".ui.RecipeDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.RecipeDetailActivity" />
+        </activity>
     </application>
 
 </manifest>

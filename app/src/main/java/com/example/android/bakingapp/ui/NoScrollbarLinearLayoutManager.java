@@ -3,10 +3,6 @@ package com.example.android.bakingapp.ui;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 
-/**
- * Created by vincent on 8/26/17.
- */
-
 public class NoScrollbarLinearLayoutManager extends LinearLayoutManager {
     private boolean isScrollEnabled = true;
 
