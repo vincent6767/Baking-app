@@ -2,8 +2,12 @@ package com.example.android.bakingapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -29,6 +33,7 @@ public class RecipesListActivity extends AppCompatActivity {
     private static final String RECIPE_BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
     private static final String GRID_VIEW_CURRENT_POSITION_KEY = "gridViewCurrentPositionKey";
     private static final String RECIPES_KEY = "recipesKey";
+    private static final String LOG_TAG = RecipesListActivity.class.getSimpleName();
     private RecipesService mRecipeService;
     private RecipesAdapter mRecipesAdapter;
     private GridView mRecipesGridView;
@@ -49,6 +54,30 @@ public class RecipesListActivity extends AppCompatActivity {
         } else {
             fetchRecipes();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.activity_recipes_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_recipe_widget_settings:
+                // Start Widget Settings Activity
+                Intent intent = new Intent(this, RecipeWidgetSettingsActivity.class);
+                intent.putParcelableArrayListExtra(RecipeWidgetSettingsActivity.RECIPE_WIDGET_SETTINGS, (ArrayList<? extends Parcelable>) mRecipesAdapter.getRecipes());
+                startActivity(intent);
+                break;
+            default:
+                Log.d(LOG_TAG, "No menu item found");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

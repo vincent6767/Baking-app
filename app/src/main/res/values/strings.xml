@@ -6,4 +6,9 @@
     <string name="title_recipe_step_detail_activity_display_message">Recipe StepDetail Activity</string>
     <string name="title_recipe_detail_activity_activity_display_message">Recipe Detail Activity</string>
     <string name="no_video_available_message">No video available</string>
+    <string name="default_recipe_name_widget">No recipe name</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="menu_settings_title">Settings</string>
+    <string name="recipe_widget_settings_title">Recipe Widget Settings</string>
 </resources>
