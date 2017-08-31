@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.adapters.RecipesAdapter;
@@ -37,6 +39,8 @@ public class RecipesListActivity extends AppCompatActivity {
     private RecipesService mRecipeService;
     private RecipesAdapter mRecipesAdapter;
     private GridView mRecipesGridView;
+    private TextView mErrorMessage;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,24 +103,51 @@ public class RecipesListActivity extends AppCompatActivity {
                 startActivity(recipeDetailIntent);
             }
         });
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mErrorMessage = (TextView) findViewById(R.id.tv_recipes_list_error_message);
     }
 
     private void fetchRecipes() {
         Callback<List<Recipe>> callback = new Callback<List<Recipe>>() {
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                mProgressBar.setVisibility(View.INVISIBLE);
+                showRecipes();
                 List<Recipe> recipes = response.body();
                 mRecipesAdapter.setRecipes(recipes);
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                Log.e(TAG, t.getMessage());
+                mProgressBar.setVisibility(View.INVISIBLE);
+                showErrorMessage(t.getMessage());
             }
         };
         Call<List<Recipe>> call = mRecipeService.getRecipes();
+        mProgressBar.setVisibility(View.VISIBLE);
         // Fetch recipes on the background mode.
         call.enqueue(callback);
+    }
+
+    private void showErrorMessage(String errorMessage) {
+        mRecipesGridView.setVisibility(View.INVISIBLE);
+        mErrorMessage.setText(errorMessage);
+        mErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void showRecipes() {
+        mErrorMessage.setText("");
+        mErrorMessage.setVisibility(View.INVISIBLE);
+        mRecipesGridView.setVisibility(View.VISIBLE);
+    }
+
+    private void onConnectivityException() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showErrorMessage(getString(R.string.no_connectivity_exception_message));
+            }
+        });
     }
 
 
