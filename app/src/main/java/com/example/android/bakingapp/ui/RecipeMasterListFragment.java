@@ -9,7 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.adapters.IngredientsAdapter;
 import com.example.android.bakingapp.adapters.RecipeStepsAdapter;
@@ -24,6 +27,7 @@ public class RecipeMasterListFragment extends Fragment {
     private RecyclerView mIngredientRecylcerView;
     private RecipeStepsAdapter mRecipeStepsAdapter;
     private RecyclerView mRecipeStepsRecyclerView;
+    private ImageView mRecipeImage;
 
     public RecipeMasterListFragment() {
     }
@@ -44,6 +48,13 @@ public class RecipeMasterListFragment extends Fragment {
                 } catch (ClassCastException e) {
                     Log.d(LOG_TAG, "Attached activity didn't implement OnRecipeStepClickListener");
                 }
+                Glide.with(getActivity().getApplicationContext())
+                        .load(mRecipe.getImage())
+                        .placeholder(R.drawable.image_placeholder)
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(mRecipeImage);
             } catch (ClassCastException e) {
                 Log.d(LOG_TAG, "Attached Activity didn't implement OnInitializationListener");
             }
@@ -56,7 +67,10 @@ public class RecipeMasterListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_recipe_master_list, container, false);
 
+        mRecipeImage = rootView.findViewById(R.id.iv_recipe_image);
+
         mIngredientRecylcerView = rootView.findViewById(R.id.rv_ingredients_list);
+        mIngredientRecylcerView.setLayoutFrozen(true);
         mIngredientRecylcerView.setHasFixedSize(true);
         LinearLayoutManager ingredientLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false) {
             @Override
@@ -72,10 +86,10 @@ public class RecipeMasterListFragment extends Fragment {
         mIngredientRecylcerView.setLayoutManager(ingredientLayoutManager);
 
         mRecipeStepsRecyclerView = rootView.findViewById(R.id.rv_recipe_steps_list);
-        mRecipeStepsRecyclerView.setHasFixedSize(true);
-        NoScrollbarLinearLayoutManager recipeStepLayoutManager = new NoScrollbarLinearLayoutManager(getActivity().getApplicationContext());
-
+        LinearLayoutManager recipeStepLayoutManager = new LinearLayoutManager(getActivity());
+        recipeStepLayoutManager.setAutoMeasureEnabled(true);
         mRecipeStepsRecyclerView.setLayoutManager(recipeStepLayoutManager);
+        mRecipeStepsRecyclerView.setNestedScrollingEnabled(false);
 
         Log.d(LOG_TAG, "onCreateView");
         return rootView;

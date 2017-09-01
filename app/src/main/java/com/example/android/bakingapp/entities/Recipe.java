@@ -6,10 +6,6 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by vincent on 8/21/17.
- */
-
 public class Recipe implements Parcelable {
     public static final Parcelable.Creator<Recipe> CREATOR = new Parcelable.Creator<Recipe>() {
         public Recipe createFromParcel(Parcel in) {
@@ -80,6 +76,10 @@ public class Recipe implements Parcelable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public boolean isImageExists() {
+        return !(getImage().equals(""));
     }
 
     @Override
