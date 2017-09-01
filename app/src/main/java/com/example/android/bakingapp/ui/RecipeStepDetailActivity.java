@@ -9,15 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.entities.Recipe;
 import com.example.android.bakingapp.entities.RecipeStep;
 
-public class RecipeStepDetailActivity extends AppCompatActivity {
+public class RecipeStepDetailActivity extends AppCompatActivity implements RecipeStepDetailFragment.OnChangeRecipeStepListener {
     public static final String RECIPE_STEP_KEY = "recipeStep";
-    public static final String RECIPE_NAME_KEY = "recipeName";
+    public static final String RECIPE_KEY = "recipe";
     private static final String LOG_TAG = RecipeStepDetailActivity.class.getSimpleName();
-
-    private String mRecipeName;
-    private RecipeStep mRecipeStep;
+    private static final String RECIPE_STEP_DETAIL_FRAGMENT_TAG = RecipeStepDetailFragment.class.getSimpleName();
+    private RecipeStep mSelectedRecipeStep;
+    private Recipe mRecipe;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,27 +27,52 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
 
         if (savedInstanceState == null) {
+            Log.d(LOG_TAG, "Create new Fragment");
             Intent intent = getIntent();
             if (intent != null) {
-                if (intent.hasExtra(RECIPE_NAME_KEY)) {
-                    mRecipeName = intent.getStringExtra(RECIPE_NAME_KEY);
-                }
-                if (intent.hasExtra(RECIPE_STEP_KEY)) {
-                    mRecipeStep = intent.getParcelableExtra(RECIPE_STEP_KEY);
-                    RecipeStepDetailFragment fragment = RecipeStepDetailFragment.newInstance(mRecipeStep);
+                if (intent.hasExtra(RECIPE_STEP_KEY) && intent.hasExtra(RECIPE_KEY)) {
+                    mSelectedRecipeStep = intent.getParcelableExtra(RECIPE_STEP_KEY);
+                    mRecipe = intent.getParcelableExtra(RECIPE_KEY);
+                    RecipeStep nextStep = mRecipe.getNextStepAfter(mSelectedRecipeStep.getId());
+                    RecipeStep previousStep = mRecipe.getPreviousStepBefore(mSelectedRecipeStep.getId());
+                    RecipeStepDetailFragment fragment = RecipeStepDetailFragment.newInstance(mSelectedRecipeStep, previousStep, nextStep, this);
 
                     FragmentManager manager = getSupportFragmentManager();
 
                     manager.beginTransaction()
-                            .add(R.id.recipe_step_detail_container, fragment)
+                            .add(R.id.recipe_step_detail_container, fragment, RECIPE_STEP_DETAIL_FRAGMENT_TAG)
                             .commit();
+
+                    if (actionBar != null) {
+                        actionBar.setTitle(mRecipe.getName());
+                        actionBar.setDisplayHomeAsUpEnabled(true);
+                    }
                 }
             }
+        } else {
+            mSelectedRecipeStep = savedInstanceState.getParcelable(RECIPE_STEP_KEY);
+            mRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
+            RecipeStepDetailFragment fragment = (RecipeStepDetailFragment) getSupportFragmentManager().findFragmentByTag(RECIPE_STEP_DETAIL_FRAGMENT_TAG);
+            fragment.setOnChangeRecipeStepListener(this);
         }
-        if (actionBar != null) {
-            Log.d(LOG_TAG, "Recipe name: " + mRecipeName);
-            actionBar.setTitle(mRecipeName);
-            actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(RECIPE_STEP_KEY, mSelectedRecipeStep);
+        outState.putParcelable(RECIPE_KEY, mRecipe);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onChange(RecipeStep recipeStep) {
+        if (recipeStep != null) {
+            Intent startRecipeStepDetailActivityIntent = new Intent(getApplicationContext(), RecipeStepDetailActivity.class);
+            startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_STEP_KEY, recipeStep);
+            startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_KEY, mRecipe);
+            Log.d(LOG_TAG, "Send Recipe Step Detail Intent");
+            startActivity(startRecipeStepDetailActivityIntent);
+            finish();
         }
     }
 }

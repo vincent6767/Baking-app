@@ -12,4 +12,6 @@
     <string name="menu_settings_title">Settings</string>
     <string name="recipe_widget_settings_title">Recipe Widget Settings</string>
     <string name="no_connectivity_exception_message">No connectivity. Please make sure that your network is turned on.</string>
+    <string name="fragment_recipe_step_detail_previous_button">previous</string>
+    <string name="fragment_recipe_step_detail_next_button">next</string>
 </resources>

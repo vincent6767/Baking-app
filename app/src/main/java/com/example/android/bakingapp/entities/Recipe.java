@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Recipe implements Parcelable {
@@ -59,7 +60,41 @@ public class Recipe implements Parcelable {
     }
 
     public void setSteps(List<RecipeStep> steps) {
+        Collections.sort(steps);
         this.steps = steps;
+    }
+
+    public int countSteps() {
+        return steps.size();
+    }
+
+    public RecipeStep getStep(int stepNumber) {
+        int length = countSteps();
+        for (int i = 0; i < length; i++) {
+            if (steps.get(i).getId() == stepNumber) {
+                return steps.get(i);
+            }
+        }
+        return null;
+    }
+
+    public RecipeStep getNextStepAfter(int stepNumber) {
+        if (stepNumber < 0) {
+            throw new IllegalArgumentException("Step number cannot be negative number");
+        }
+        if (stepNumber > countSteps() - 1) {
+            throw new IllegalArgumentException("Step number cannot larger than last number step");
+        }
+        int nextNumber = stepNumber + 1;
+        return getStep(nextNumber);
+    }
+
+    public RecipeStep getPreviousStepBefore(int stepNumber) {
+        if (stepNumber < 0) {
+            throw new IllegalArgumentException("Step number cannot smaller than the first number step");
+        }
+        int nextNumber = stepNumber - 1;
+        return getStep(nextNumber);
     }
 
     public Integer getServings() {

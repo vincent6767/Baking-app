@@ -3,11 +3,12 @@ package com.example.android.bakingapp.entities;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Locale;
 
-public class RecipeStep implements Parcelable {
+public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
     public static final Parcelable.Creator<RecipeStep> CREATOR = new Parcelable.Creator<RecipeStep>() {
         public RecipeStep createFromParcel(Parcel in) {
             return new RecipeStep(in);
@@ -103,5 +104,15 @@ public class RecipeStep implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(videoURL);
         parcel.writeString(thumbnailURL);
+    }
+
+    @Override
+    public int compareTo(@NonNull RecipeStep recipeStep) {
+        return getId() - recipeStep.getId();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof RecipeStep && getId() == ((RecipeStep) obj).getId();
     }
 }

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
@@ -25,21 +26,48 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-public class RecipeStepDetailFragment extends Fragment {
+public class RecipeStepDetailFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = RecipeStepDetailFragment.class.getSimpleName();
     private static final String RECIPE_STEP_KEY = "recipeStep";
-    private RecipeStep mRecipeStep;
+    private static final String PREVIOUS_RECIPE_STEP_KEY = "previousRecipeStep";
+    private static final String NEXT_RECIPE_STEP_KEY = "nextRecipeStep";
+
+    private RecipeStep mSelectedRecipeStep;
     private SimpleExoPlayer mExoPlayer;
+    private RecipeStep mPreviousRecipeStep;
+    private RecipeStep mNextRecipeStep;
+    private OnChangeRecipeStepListener mOnChangeRecipeStepListener;
 
     public RecipeStepDetailFragment() {
     }
 
-    public static RecipeStepDetailFragment newInstance(RecipeStep recipeStep) {
+    public static RecipeStepDetailFragment newInstance(RecipeStep recipeStep, RecipeStep previousStep, RecipeStep nexStep, OnChangeRecipeStepListener onChangeRecipeStepListener) {
         RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
+        fragment.mOnChangeRecipeStepListener = onChangeRecipeStepListener;
         Bundle args = new Bundle();
         args.putParcelable(RECIPE_STEP_KEY, recipeStep);
+        args.putParcelable(PREVIOUS_RECIPE_STEP_KEY, previousStep);
+        args.putParcelable(NEXT_RECIPE_STEP_KEY, nexStep);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_next_step:
+                mOnChangeRecipeStepListener.onChange(mNextRecipeStep);
+                break;
+            case R.id.btn_previous_step:
+                mOnChangeRecipeStepListener.onChange(mPreviousRecipeStep);
+                break;
+            default:
+                Log.w(LOG_TAG, "View that attached to the method not previous or next button. Do nothing about it");
+        }
+    }
+
+    public void setOnChangeRecipeStepListener(OnChangeRecipeStepListener onChangeRecipeStepListener) {
+        mOnChangeRecipeStepListener = onChangeRecipeStepListener;
     }
 
     @Nullable
@@ -49,22 +77,33 @@ public class RecipeStepDetailFragment extends Fragment {
 
         if (this.getArguments() != null) {
             Log.d(LOG_TAG, "There is a saved instance state");
-            mRecipeStep = this.getArguments().getParcelable(RECIPE_STEP_KEY);
+            mSelectedRecipeStep = this.getArguments().getParcelable(RECIPE_STEP_KEY);
+            mPreviousRecipeStep = this.getArguments().getParcelable(PREVIOUS_RECIPE_STEP_KEY);
+            mNextRecipeStep = this.getArguments().getParcelable(NEXT_RECIPE_STEP_KEY);
         }
-        if (mRecipeStep != null) {
+        if (mSelectedRecipeStep != null) {
             Log.d(LOG_TAG, "There is a saved instance state");
             SimpleExoPlayerView playerView = rootView.findViewById(R.id.player_view);
             TextView errorMessage = rootView.findViewById(R.id.tv_video_error_message);
-            if (mRecipeStep.hasVideo()) {
+            if (mSelectedRecipeStep.hasVideo()) {
                 showPlayerView(playerView);
                 errorMessage.setVisibility(View.INVISIBLE);
-                initializePlayer(mRecipeStep.getVideoUri(), playerView);
+                initializePlayer(mSelectedRecipeStep.getVideoUri(), playerView);
             } else {
                 hidePlayerview(playerView);
                 errorMessage.setVisibility(View.VISIBLE);
             }
             TextView recipeStepDescriptionTextView = rootView.findViewById(R.id.tv_recipe_step_description);
-            recipeStepDescriptionTextView.setText(mRecipeStep.getDescription());
+            recipeStepDescriptionTextView.setText(mSelectedRecipeStep.getDescription());
+
+            Button nextButton = rootView.findViewById(R.id.btn_next_step);
+            Button previousButton = rootView.findViewById(R.id.btn_previous_step);
+            // Disable or enable button based on the existing next and previous step.
+            nextButton.setEnabled((mNextRecipeStep != null));
+            previousButton.setEnabled((mPreviousRecipeStep != null));
+
+            nextButton.setOnClickListener(this);
+            previousButton.setOnClickListener(this);
         } else {
             Log.d(LOG_TAG, "This fragment has a null RecipeStep");
         }
@@ -108,5 +147,9 @@ public class RecipeStepDetailFragment extends Fragment {
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
+    }
+
+    public interface OnChangeRecipeStepListener {
+        void onChange(RecipeStep recipeStep);
     }
 }
