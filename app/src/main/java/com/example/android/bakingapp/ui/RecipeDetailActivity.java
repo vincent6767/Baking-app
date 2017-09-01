@@ -8,11 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.android.bakingapp.R;
-import com.example.android.bakingapp.adapters.RecipeStepsAdapter;
+import com.example.android.bakingapp.adapters.RecipeDetailRecyclerViewAdapter;
 import com.example.android.bakingapp.entities.Recipe;
 import com.example.android.bakingapp.entities.RecipeStep;
 
-public class RecipeDetailActivity extends AppCompatActivity implements RecipeMasterListFragment.OnInitializationListener, RecipeStepsAdapter.OnRecipeStepClickListener {
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeMasterListFragment.OnInitializationListener, RecipeDetailRecyclerViewAdapter.OnRecipeStepSelectedListener {
     private static final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
     private Recipe mRecipe;
     // TODO: Preserve in OnSavedInstanceState
@@ -52,13 +52,13 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeMas
     }
 
     @Override
-    public void onRecipeStepSelected(RecipeStep recipeStep) {
+    public void onSelected(RecipeStep recipeStep) {
         mSelectedRecipeStep = recipeStep;
         if (!mTwoPane) {
             Intent startRecipeStepDetailActivityIntent = new Intent(getApplicationContext(), RecipeStepDetailActivity.class);
             startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_STEP_KEY, mSelectedRecipeStep);
             startRecipeStepDetailActivityIntent.putExtra(RecipeStepDetailActivity.RECIPE_NAME_KEY, mRecipe.getName());
-            Log.d(LOG_TAG, "Starting Recipe Step Detail Intent");
+            Log.d(LOG_TAG, "Send Recipe Step Detail Intent");
             startActivity(startRecipeStepDetailActivityIntent);
         } else if (mSelectedRecipeStep != null) {
             RecipeStepDetailFragment recipeStepDetailFragment = RecipeStepDetailFragment.newInstance(mSelectedRecipeStep);

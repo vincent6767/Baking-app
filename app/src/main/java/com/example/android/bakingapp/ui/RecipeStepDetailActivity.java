@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.entities.RecipeStep;
@@ -13,6 +14,7 @@ import com.example.android.bakingapp.entities.RecipeStep;
 public class RecipeStepDetailActivity extends AppCompatActivity {
     public static final String RECIPE_STEP_KEY = "recipeStep";
     public static final String RECIPE_NAME_KEY = "recipeName";
+    private static final String LOG_TAG = RecipeStepDetailActivity.class.getSimpleName();
 
     private String mRecipeName;
     private RecipeStep mRecipeStep;
@@ -42,6 +44,7 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
             }
         }
         if (actionBar != null) {
+            Log.d(LOG_TAG, "Recipe name: " + mRecipeName);
             actionBar.setTitle(mRecipeName);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
