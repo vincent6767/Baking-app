@@ -35,7 +35,7 @@ public class RecipeDetailRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
 
     @Override
     public void onClick(int position) {
-        mRecipeStepListener.onSelected((RecipeStep) mItems.get(position));
+        mRecipeStepListener.onSelected((RecipeStep) mItems.get(position), position);
     }
 
     @Override
@@ -137,6 +137,6 @@ public class RecipeDetailRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
     }
 
     public interface OnRecipeStepSelectedListener {
-        void onSelected(RecipeStep recipeStep);
+        void onSelected(RecipeStep recipeStep, int position);
     }
 }

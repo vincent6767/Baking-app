@@ -8,12 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.android.bakingapp.R;
-import com.example.android.bakingapp.adapters.RecipeDetailRecyclerViewAdapter;
 import com.example.android.bakingapp.entities.Recipe;
 import com.example.android.bakingapp.entities.RecipeStep;
 
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeMasterListFragment.OnInitializationListener,
-        RecipeDetailRecyclerViewAdapter.OnRecipeStepSelectedListener,
+        RecipeMasterListFragment.OnRecipeStepSelectedListener,
         RecipeStepDetailFragment.OnChangeRecipeStepListener {
     private static final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
     private static final String RECIPE_KEY = "recipe";
