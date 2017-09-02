@@ -1,12 +1,14 @@
 package com.example.android.bakingapp.ui;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.entities.Recipe;
@@ -23,8 +25,21 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements Recip
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe_step_detail);
+        int displayMode = getResources().getConfiguration().orientation;
         ActionBar actionBar = getSupportActionBar();
+
+        if (displayMode == Configuration.ORIENTATION_LANDSCAPE) {
+            if (actionBar != null) {
+                actionBar.hide();
+            }
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            if (actionBar != null) {
+                actionBar.show();
+            }
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        setContentView(R.layout.activity_recipe_step_detail);
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
@@ -62,7 +77,6 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements Recip
         outState.putParcelable(RECIPE_KEY, mRecipe);
         super.onSaveInstanceState(outState);
     }
-
     @Override
     public void onChange(RecipeStep recipeStep) {
         if (recipeStep != null) {

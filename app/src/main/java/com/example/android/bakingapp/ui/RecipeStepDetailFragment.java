@@ -37,7 +37,13 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private SimpleExoPlayer mExoPlayer;
     private RecipeStep mPreviousRecipeStep;
     private RecipeStep mNextRecipeStep;
+    private Button mPreviousButton;
+    private Button mNextButton;
+    private TextView mStepDescriptionTextView;
+    private SimpleExoPlayerView mSimpleExoPlayerView;
     private OnChangeRecipeStepListener mOnChangeRecipeStepListener;
+
+    private boolean mFullscreenMode;
 
     public RecipeStepDetailFragment() {
     }
@@ -73,8 +79,10 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        long playerPosition = mExoPlayer.getCurrentPosition();
-        outState.putLong(PLAYER_POSITION_KEY, playerPosition);
+        if (mExoPlayer != null) {
+            long playerPosition = mExoPlayer.getCurrentPosition();
+            outState.putLong(PLAYER_POSITION_KEY, playerPosition);
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -84,54 +92,59 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         final View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
 
         if (this.getArguments() != null) {
-            Log.d(LOG_TAG, "There is a saved instance state");
             mSelectedRecipeStep = this.getArguments().getParcelable(RECIPE_STEP_KEY);
             mPreviousRecipeStep = this.getArguments().getParcelable(PREVIOUS_RECIPE_STEP_KEY);
             mNextRecipeStep = this.getArguments().getParcelable(NEXT_RECIPE_STEP_KEY);
         }
         if (mSelectedRecipeStep != null) {
-            Log.d(LOG_TAG, "There is a saved instance state");
-            SimpleExoPlayerView playerView = rootView.findViewById(R.id.player_view);
+            mSimpleExoPlayerView = rootView.findViewById(R.id.player_view);
             TextView errorMessage = rootView.findViewById(R.id.tv_video_error_message);
             if (mSelectedRecipeStep.hasVideo()) {
-                showPlayerView(playerView);
+                showPlayerView(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.INVISIBLE);
                 long lastPosition = 0;
                 if (savedInstanceState != null) {
                     lastPosition = savedInstanceState.getLong(PLAYER_POSITION_KEY);
                 }
-                initializePlayer(mSelectedRecipeStep.getVideoUri(), playerView, lastPosition);
+                initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, lastPosition);
             } else {
-                hidePlayerview(playerView);
+                hidePlayerview(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.VISIBLE);
             }
-            TextView recipeStepDescriptionTextView = rootView.findViewById(R.id.tv_recipe_step_description);
-            recipeStepDescriptionTextView.setText(mSelectedRecipeStep.getDescription());
 
-            Button nextButton = rootView.findViewById(R.id.btn_next_step);
-            Button previousButton = rootView.findViewById(R.id.btn_previous_step);
-            // Disable or enable button based on the existing next and previous step.
-            nextButton.setEnabled((mNextRecipeStep != null));
-            previousButton.setEnabled((mPreviousRecipeStep != null));
+            mFullscreenMode = (rootView.findViewById(R.id.fl_video_player_container) == null);
 
-            nextButton.setOnClickListener(this);
-            previousButton.setOnClickListener(this);
+            if (!mFullscreenMode) {
+                mStepDescriptionTextView = rootView.findViewById(R.id.tv_recipe_step_description);
+                mStepDescriptionTextView.setText(mSelectedRecipeStep.getDescription());
+
+                mNextButton = rootView.findViewById(R.id.btn_next_step);
+                mPreviousButton = rootView.findViewById(R.id.btn_previous_step);
+                // Disable or enable button based on the existing next and previous step.
+                mNextButton.setEnabled((mNextRecipeStep != null));
+                mPreviousButton.setEnabled((mPreviousRecipeStep != null));
+
+                mNextButton.setOnClickListener(this);
+                mPreviousButton.setOnClickListener(this);
+            }
         } else {
             Log.d(LOG_TAG, "This fragment has a null RecipeStep");
         }
         return rootView;
     }
-
     @Override
     public void onStop() {
         super.onStop();
+        releaseExoPlayer();
+    }
+
+    private void releaseExoPlayer() {
         if (mExoPlayer != null) {
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
         }
     }
-
     private void showPlayerView(SimpleExoPlayerView playerView) {
         playerView.setVisibility(View.VISIBLE);
         playerView.showController();

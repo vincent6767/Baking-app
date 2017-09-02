@@ -57,7 +57,6 @@ public class RecipeDetailRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        Log.d(LOG_TAG, "View type: " + String.valueOf(viewType));
         switch (viewType) {
             case RECIPE_IMAGE:
                 View recipeImageView = inflater.inflate(R.layout.viewholder_recipe_detail_recipe_image, parent, false);
