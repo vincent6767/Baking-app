@@ -69,6 +69,21 @@ public class RecipeStepDetailActivityTest {
     }
 
     @Test
+    public void clickExoplayerPauseButton_WillNotThrowError() {
+        onView(withId(R.id.btn_next_step)).perform(click());
+
+        onView(withId(R.id.exo_pause)).perform(click());
+    }
+
+    @Test
+    public void clickExoplayerStopButton_WillNotThrowError() {
+        onView(withId(R.id.btn_next_step)).perform(click());
+
+        // Play button will replace Pause button if the pause button is clicked.
+        onView(withId(R.id.exo_pause)).perform(click());
+        onView(withId(R.id.exo_play)).perform(click());
+    }
+    @Test
     public void clickNextButton_NavigateToTheNextStep() {
         onView(withId(R.id.btn_next_step)).perform(click());
 
