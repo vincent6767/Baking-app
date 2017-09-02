@@ -1,4 +1,4 @@
-package com.example.android.bakingapp.idlingresource;
+package com.example.android.bakingapp.idlingresources;
 
 import android.support.annotation.Nullable;
 import android.support.test.espresso.IdlingResource;
@@ -19,11 +19,18 @@ public class SimpleIdlingResource implements IdlingResource {
 
     @Override
     public boolean isIdleNow() {
-        return false;
+        return mIsIdleNow.get();
     }
 
     @Override
     public void registerIdleTransitionCallback(ResourceCallback callback) {
+        mCallback = callback;
+    }
 
+    public void setIdleState(boolean isIdleNow) {
+        mIsIdleNow.set(isIdleNow);
+        if (isIdleNow && mCallback != null) {
+            mCallback.onTransitionToIdle();
+        }
     }
 }

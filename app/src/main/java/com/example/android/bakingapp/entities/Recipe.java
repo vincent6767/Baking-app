@@ -35,6 +35,15 @@ public class Recipe implements Parcelable {
         in.readTypedList(this.steps, RecipeStep.CREATOR);
     }
 
+    public Recipe(Integer id, String name, List<Ingredient> ingredients, List<RecipeStep> steps, Integer servings, String image) {
+        this.id = id;
+        this.name = name;
+        this.ingredients = ingredients;
+        this.steps = steps;
+        this.servings = servings;
+        this.image = image;
+    }
+
     public Integer getId() {
         return id;
     }

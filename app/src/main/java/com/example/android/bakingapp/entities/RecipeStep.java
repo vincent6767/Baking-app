@@ -36,6 +36,14 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
         super();
     }
 
+    public RecipeStep(Integer id, String shortDescription, String description, @Nullable String videoURL, @Nullable String thumbnailURL) {
+        this.id = id;
+        this.shortDescription = shortDescription;
+        this.description = description;
+        this.videoURL = videoURL;
+        this.thumbnailURL = thumbnailURL;
+    }
+
     public Integer getId() {
         return id;
     }
