@@ -31,6 +31,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private static final String RECIPE_STEP_KEY = "recipeStep";
     private static final String PREVIOUS_RECIPE_STEP_KEY = "previousRecipeStep";
     private static final String NEXT_RECIPE_STEP_KEY = "nextRecipeStep";
+    private static final String PLAYER_POSITION_KEY = "playerPosition";
 
     private RecipeStep mSelectedRecipeStep;
     private SimpleExoPlayer mExoPlayer;
@@ -70,6 +71,13 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         mOnChangeRecipeStepListener = onChangeRecipeStepListener;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        long playerPosition = mExoPlayer.getCurrentPosition();
+        outState.putLong(PLAYER_POSITION_KEY, playerPosition);
+        super.onSaveInstanceState(outState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -88,7 +96,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             if (mSelectedRecipeStep.hasVideo()) {
                 showPlayerView(playerView);
                 errorMessage.setVisibility(View.INVISIBLE);
-                initializePlayer(mSelectedRecipeStep.getVideoUri(), playerView);
+                long lastPosition = 0;
+                if (savedInstanceState != null) {
+                    lastPosition = savedInstanceState.getLong(PLAYER_POSITION_KEY);
+                }
+                initializePlayer(mSelectedRecipeStep.getVideoUri(), playerView, lastPosition);
             } else {
                 hidePlayerview(playerView);
                 errorMessage.setVisibility(View.VISIBLE);
@@ -130,7 +142,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         playerView.hideController();
     }
 
-    private void initializePlayer(Uri mediaUri, SimpleExoPlayerView playerView) {
+    private void initializePlayer(Uri mediaUri, SimpleExoPlayerView playerView, long position) {
         if (mExoPlayer == null) {
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
@@ -145,6 +157,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                     new DefaultExtractorsFactory(),
                     null, null);
             mExoPlayer.prepare(mediaSource);
+            if (position > -1) {
+                mExoPlayer.seekTo(position);
+            }
             mExoPlayer.setPlayWhenReady(true);
         }
     }

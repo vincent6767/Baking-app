@@ -27,7 +27,6 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements Recip
         ActionBar actionBar = getSupportActionBar();
 
         if (savedInstanceState == null) {
-            Log.d(LOG_TAG, "Create new Fragment");
             Intent intent = getIntent();
             if (intent != null) {
                 if (intent.hasExtra(RECIPE_STEP_KEY) && intent.hasExtra(RECIPE_KEY)) {
@@ -42,7 +41,7 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements Recip
                     manager.beginTransaction()
                             .add(R.id.recipe_step_detail_container, fragment, RECIPE_STEP_DETAIL_FRAGMENT_TAG)
                             .commit();
-
+                    Log.d(LOG_TAG, "Created new fragment");
                     if (actionBar != null) {
                         actionBar.setTitle(mRecipe.getName());
                         actionBar.setDisplayHomeAsUpEnabled(true);
