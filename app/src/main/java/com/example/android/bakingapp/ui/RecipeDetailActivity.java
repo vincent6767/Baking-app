@@ -88,9 +88,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeMas
             startActivity(startRecipeStepDetailActivityIntent);
         } else if (mSelectedRecipeStep != null) {
             RecipeStepDetailFragment recipeStepDetailFragment = RecipeStepDetailFragment.newInstance(mSelectedRecipeStep, previousStep, nextStep, this);
-            getSupportFragmentManager().beginTransaction().replace(R.id.recipe_step_detail_container, recipeStepDetailFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.recipe_step_detail_container, recipeStepDetailFragment, RECIPE_DETAIL_FRAGMENT_KEY).commit();
         } else {
-            Log.d(LOG_TAG, "Passed Recipe Step value is null");
+            // TODO: Handle this.
+            Log.e(LOG_TAG, "Passed Recipe Step value is null");
         }
     }
     @Override

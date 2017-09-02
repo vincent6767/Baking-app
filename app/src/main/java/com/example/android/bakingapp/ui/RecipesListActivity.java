@@ -63,7 +63,6 @@ public class RecipesListActivity extends AppCompatActivity {
             List<Recipe> recipes = savedInstanceState.getParcelableArrayList(RECIPES_KEY);
             mRecipesAdapter.setRecipes(recipes);
             mRecipesGridView.smoothScrollToPosition(currentPosition);
-            Log.d(TAG, "Current position: " + currentPosition);
         } else {
             fetchRecipes();
         }

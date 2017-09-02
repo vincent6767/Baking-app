@@ -120,15 +120,19 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
                 mNextButton = rootView.findViewById(R.id.btn_next_step);
                 mPreviousButton = rootView.findViewById(R.id.btn_previous_step);
-                // Disable or enable button based on the existing next and previous step.
-                mNextButton.setEnabled((mNextRecipeStep != null));
-                mPreviousButton.setEnabled((mPreviousRecipeStep != null));
-
-                mNextButton.setOnClickListener(this);
-                mPreviousButton.setOnClickListener(this);
+                // Disable or enable button based on the existing next and previous step only if it is available.
+                if (mNextButton != null) {
+                    mNextButton.setEnabled((mNextRecipeStep != null));
+                    mNextButton.setOnClickListener(this);
+                }
+                if (mPreviousButton != null) {
+                    mPreviousButton.setEnabled((mPreviousRecipeStep != null));
+                    mPreviousButton.setOnClickListener(this);
+                }
             }
         } else {
-            Log.d(LOG_TAG, "This fragment has a null RecipeStep");
+            // TODO: Handle this scenario
+            Log.e(LOG_TAG, "This fragment has a null RecipeStep");
         }
         return rootView;
     }
