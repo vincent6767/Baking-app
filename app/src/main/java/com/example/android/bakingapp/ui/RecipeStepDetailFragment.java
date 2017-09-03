@@ -9,24 +9,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.entities.RecipeStep;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-public class RecipeStepDetailFragment extends Fragment implements View.OnClickListener {
+public class RecipeStepDetailFragment extends Fragment implements View.OnClickListener, ExoPlayer.EventListener {
     private static final String LOG_TAG = RecipeStepDetailFragment.class.getSimpleName();
     private static final String RECIPE_STEP_KEY = "recipeStep";
     private static final String PREVIOUS_RECIPE_STEP_KEY = "previousRecipeStep";
@@ -40,6 +49,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private Button mPreviousButton;
     private Button mNextButton;
     private TextView mStepDescriptionTextView;
+    private ImageView mVideoThumbnailImageView;
     private SimpleExoPlayerView mSimpleExoPlayerView;
     private OnChangeRecipeStepListener mOnChangeRecipeStepListener;
 
@@ -99,6 +109,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         if (mSelectedRecipeStep != null) {
             mSimpleExoPlayerView = rootView.findViewById(R.id.player_view);
             TextView errorMessage = rootView.findViewById(R.id.tv_video_error_message);
+            mVideoThumbnailImageView = rootView.findViewById(R.id.iv_video_thumbnail);
             if (mSelectedRecipeStep.hasVideo()) {
                 showPlayerView(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.INVISIBLE);
@@ -152,11 +163,20 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private void showPlayerView(SimpleExoPlayerView playerView) {
         playerView.setVisibility(View.VISIBLE);
         playerView.showController();
+        Glide.with(getActivity().getApplicationContext())
+                .load(mSelectedRecipeStep.getThumbnailURL())
+                .placeholder(R.drawable.video_placeholder)
+                .thumbnail(0.5f)
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(mVideoThumbnailImageView);
+        mVideoThumbnailImageView.setVisibility(View.VISIBLE);
     }
 
     private void hidePlayerview(SimpleExoPlayerView playerView) {
         playerView.setVisibility(View.INVISIBLE);
         playerView.hideController();
+        mVideoThumbnailImageView.setVisibility(View.INVISIBLE);
     }
 
     private void initializePlayer(Uri mediaUri, SimpleExoPlayerView playerView, long position) {
@@ -177,8 +197,51 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             if (position > -1) {
                 mExoPlayer.seekTo(position);
             }
+            mExoPlayer.addListener(this);
             mExoPlayer.setPlayWhenReady(true);
         }
+    }
+
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if (playbackState == ExoPlayer.STATE_READY) {
+            mVideoThumbnailImageView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+
+    }
+
+    @Override
+    public void onPositionDiscontinuity() {
+
+    }
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
     }
 
     public interface OnChangeRecipeStepListener {

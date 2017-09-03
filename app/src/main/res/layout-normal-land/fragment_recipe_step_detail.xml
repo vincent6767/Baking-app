@@ -10,6 +10,13 @@
         android:layout_height="match_parent"
         app:resize_mode="fill" />
 
+    <ImageView
+        android:id="@+id/iv_video_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:visibility="invisible" />
+
     <TextView
         android:id="@+id/tv_video_error_message"
         android:layout_width="wrap_content"
