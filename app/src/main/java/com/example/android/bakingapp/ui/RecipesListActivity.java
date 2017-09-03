@@ -7,18 +7,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
-import com.example.android.bakingapp.adapters.RecipesAdapter;
+import com.example.android.bakingapp.adapters.RecipesRecyclerViewAdapter;
 import com.example.android.bakingapp.entities.Recipe;
 import com.example.android.bakingapp.idlingresources.RecipesExecutor;
 import com.example.android.bakingapp.services.RecipesService;
@@ -35,18 +35,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RecipesListActivity extends AppCompatActivity {
+public class RecipesListActivity extends AppCompatActivity implements RecipesRecyclerViewAdapter.OnRecipeClickListener {
     public static final String SELECTED_RECIPE_KEY = "recipe";
-    private static final String TAG = RecipesListActivity.class.getSimpleName();
     private static final String RECIPE_BASE_URL = "https://d17h27t6h515a5.cloudfront.net";
-    private static final String GRID_VIEW_CURRENT_POSITION_KEY = "gridViewCurrentPositionKey";
+    private static final String RECYCLER_VIEW_CURRENT_POSITION_KEY = "recyclerViewCurrentPositionKey";
     private static final String RECIPES_KEY = "recipesKey";
     private static final String LOG_TAG = RecipesListActivity.class.getSimpleName();
     @Nullable
     private RecipesExecutor mRecipesExecutor;
     private RecipesService mRecipeService;
-    private RecipesAdapter mRecipesAdapter;
-    private GridView mRecipesGridView;
+    private RecyclerView mRecipesRecyclerView;
+    private RecipesRecyclerViewAdapter mRecipesRecyclerViewAdapter;
     private TextView mErrorMessage;
     private ProgressBar mProgressBar;
 
@@ -59,10 +58,12 @@ public class RecipesListActivity extends AppCompatActivity {
         initializeRecipeService();
 
         if (savedInstanceState != null) {
-            int currentPosition = savedInstanceState.getInt(GRID_VIEW_CURRENT_POSITION_KEY);
+            Parcelable listState = savedInstanceState.getParcelable(RECYCLER_VIEW_CURRENT_POSITION_KEY);
+            if (listState != null) {
+                mRecipesRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+            }
             List<Recipe> recipes = savedInstanceState.getParcelableArrayList(RECIPES_KEY);
-            mRecipesAdapter.setRecipes(recipes);
-            mRecipesGridView.smoothScrollToPosition(currentPosition);
+            mRecipesRecyclerViewAdapter.setRecipes(recipes);
         } else {
             fetchRecipes();
         }
@@ -94,7 +95,7 @@ public class RecipesListActivity extends AppCompatActivity {
             case R.id.action_recipe_widget_settings:
                 // Start Widget Settings Activity
                 Intent intent = new Intent(this, RecipeWidgetSettingsActivity.class);
-                intent.putParcelableArrayListExtra(RecipeWidgetSettingsActivity.RECIPE_WIDGET_SETTINGS, (ArrayList<? extends Parcelable>) mRecipesAdapter.getRecipes());
+                intent.putParcelableArrayListExtra(RecipeWidgetSettingsActivity.RECIPE_WIDGET_SETTINGS, (ArrayList<? extends Parcelable>) mRecipesRecyclerViewAdapter.getRecipes());
                 startActivity(intent);
                 break;
             default:
@@ -106,23 +107,18 @@ public class RecipesListActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(GRID_VIEW_CURRENT_POSITION_KEY, mRecipesGridView.getFirstVisiblePosition());
-        outState.putParcelableArrayList(RECIPES_KEY, (ArrayList<Recipe>) mRecipesAdapter.getRecipes());
+        outState.putParcelable(RECYCLER_VIEW_CURRENT_POSITION_KEY, mRecipesRecyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putParcelableArrayList(RECIPES_KEY, (ArrayList<Recipe>) mRecipesRecyclerViewAdapter.getRecipes());
         super.onSaveInstanceState(outState);
     }
 
     private void initializeViews() {
-        mRecipesGridView = (GridView) findViewById(R.id.gv_recipes);
-        mRecipesAdapter = new RecipesAdapter(this, new ArrayList<Recipe>());
-        mRecipesGridView.setAdapter(mRecipesAdapter);
-        mRecipesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent recipeDetailIntent = new Intent(getApplicationContext(), RecipeDetailActivity.class);
-                recipeDetailIntent.putExtra(SELECTED_RECIPE_KEY, mRecipesAdapter.getItem(position));
-                startActivity(recipeDetailIntent);
-            }
-        });
+        mRecipesRecyclerView = (RecyclerView) findViewById(R.id.rv_recipes_list);
+        mRecipesRecyclerView.setHasFixedSize(true);
+        GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), getResources().getInteger(R.integer.number_of_recipe_columns));
+        mRecipesRecyclerView.setLayoutManager(layoutManager);
+        mRecipesRecyclerViewAdapter = new RecipesRecyclerViewAdapter(getApplicationContext(), new ArrayList<Recipe>(), this);
+        mRecipesRecyclerView.setAdapter(mRecipesRecyclerViewAdapter);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mErrorMessage = (TextView) findViewById(R.id.tv_recipes_list_error_message);
     }
@@ -137,7 +133,7 @@ public class RecipesListActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.INVISIBLE);
                 showRecipes();
                 List<Recipe> recipes = response.body();
-                mRecipesAdapter.setRecipes(recipes);
+                mRecipesRecyclerViewAdapter.setRecipes(recipes);
             }
 
             @Override
@@ -153,7 +149,7 @@ public class RecipesListActivity extends AppCompatActivity {
     }
 
     private void showErrorMessage(String errorMessage) {
-        mRecipesGridView.setVisibility(View.INVISIBLE);
+        mRecipesRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessage.setText(errorMessage);
         mErrorMessage.setVisibility(View.VISIBLE);
     }
@@ -161,7 +157,7 @@ public class RecipesListActivity extends AppCompatActivity {
     private void showRecipes() {
         mErrorMessage.setText("");
         mErrorMessage.setVisibility(View.INVISIBLE);
-        mRecipesGridView.setVisibility(View.VISIBLE);
+        mRecipesRecyclerView.setVisibility(View.VISIBLE);
     }
 
     private void onConnectivityException() {
@@ -189,5 +185,12 @@ public class RecipesListActivity extends AppCompatActivity {
                 .client(builder.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(RecipesService.class);
+    }
+
+    @Override
+    public void onClick(Recipe recipe) {
+        Intent recipeDetailIntent = new Intent(getApplicationContext(), RecipeDetailActivity.class);
+        recipeDetailIntent.putExtra(SELECTED_RECIPE_KEY, recipe);
+        startActivity(recipeDetailIntent);
     }
 }
