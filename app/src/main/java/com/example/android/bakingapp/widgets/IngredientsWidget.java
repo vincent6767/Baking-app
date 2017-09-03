@@ -45,13 +45,13 @@ public class IngredientsWidget extends AppWidgetProvider {
 
         views.setTextViewText(R.id.tv_ingredients_list, "");
         StringBuilder stringBuilder = new StringBuilder();
-        if (ingredientArrayList.size() > 0) {
+        if (ingredientArrayList != null && ingredientArrayList.size() > 0) {
             for (Ingredient ingredient : ingredientArrayList) {
                 String formattedIngredient = String.format(Locale.US, "%s\t\t\t%.1f %s\n", ingredient.getName(), ingredient.getQuantity(), ingredient.getMeasure());
                 stringBuilder.append(formattedIngredient);
             }
+            views.setTextViewText(R.id.tv_ingredients_list, stringBuilder.toString());
         }
-        views.setTextViewText(R.id.tv_ingredients_list, stringBuilder.toString());
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
