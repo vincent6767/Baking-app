@@ -64,7 +64,9 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeMas
             // You need to change the listener because the previous activity has been killed.
             if (mTwoPane) {
                 RecipeStepDetailFragment fragment = (RecipeStepDetailFragment) getSupportFragmentManager().findFragmentByTag(RECIPE_DETAIL_FRAGMENT_KEY);
-                fragment.setOnChangeRecipeStepListener(this);
+                if (fragment != null) {
+                    fragment.setOnChangeRecipeStepListener(this);
+                }
             }
         }
     }

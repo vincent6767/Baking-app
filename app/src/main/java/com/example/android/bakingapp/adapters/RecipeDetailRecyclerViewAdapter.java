@@ -23,21 +23,38 @@ import java.util.List;
 public class RecipeDetailRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements RecipeStepViewHolder.OnRecipeStepClickListener {
     private static final String LOG_TAG = RecipeDetailRecyclerViewAdapter.class.getSimpleName();
     private static final int RECIPE_IMAGE = 0, TITLE = 1, INGREDIENT = 2, RECIPE_STEP = 3;
+    private static final float SELECTED_ALPHA_RECIPE_STEP = 0.5f;
+
     private Context mContext;
     private List<Object> mItems;
     private OnRecipeStepSelectedListener mRecipeStepListener;
+    private int mLastPositionClicked = -1;
 
-    public RecipeDetailRecyclerViewAdapter(Context context, List<Object> items, OnRecipeStepSelectedListener onRecipeStepSelectedListener) {
+    public RecipeDetailRecyclerViewAdapter(Context context, List<Object> items, OnRecipeStepSelectedListener onRecipeStepSelectedListener, int lastPosition) {
         mContext = context;
         mItems = items;
         mRecipeStepListener = onRecipeStepSelectedListener;
+        mLastPositionClicked = lastPosition;
     }
 
     @Override
     public void onClick(int position) {
+        Log.d(LOG_TAG, "Last position: " + mLastPositionClicked);
+        Log.d(LOG_TAG, "Current position: " + position);
+        updateRecipeStep(mLastPositionClicked, false);
+        updateRecipeStep(position, true);
+        mLastPositionClicked = position;
         mRecipeStepListener.onSelected((RecipeStep) mItems.get(position), position);
     }
 
+    private void updateRecipeStep(int position, boolean selected) {
+        if (position > -1) {
+            RecipeStep recipeStep = (RecipeStep) mItems.get(position);
+            if (selected) recipeStep.selected();
+            else recipeStep.unSelected();
+            notifyItemChanged(position);
+        }
+    }
     @Override
     public int getItemViewType(int position) {
         Object item = mItems.get(position);
@@ -103,8 +120,12 @@ public class RecipeDetailRecyclerViewAdapter extends RecyclerView.Adapter<Recycl
 
     private void configureRecipeStepViewHolder(RecipeStepViewHolder viewHolder, int position) {
         RecipeStep recipeStep = (RecipeStep) mItems.get(position);
-
         viewHolder.getmShortDescriptionTextView().setText(recipeStep.getShortDescriptionWithOrderNumber());
+        if (recipeStep.isSelected()) {
+            viewHolder.getmShortDescriptionTextView().setAlpha(SELECTED_ALPHA_RECIPE_STEP);
+        } else {
+            viewHolder.getmShortDescriptionTextView().setAlpha(1.0f);
+        }
     }
 
     private void configureIngredientViewHolder(IngredientViewHolder viewHolder, int position) {

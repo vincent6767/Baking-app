@@ -25,6 +25,8 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
     private String videoURL;
     @Nullable
     private String thumbnailURL;
+    private boolean isSelected;
+
     public RecipeStep(Parcel in) {
         this.id = in.readInt();
         this.shortDescription = in.readString();
@@ -42,6 +44,7 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
         this.description = description;
         this.videoURL = videoURL;
         this.thumbnailURL = thumbnailURL;
+        this.isSelected = false;
     }
 
     public Integer getId() {
@@ -54,6 +57,18 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
 
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
+    }
+
+    public void selected() {
+        isSelected = true;
+    }
+
+    public void unSelected() {
+        isSelected = false;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 
     public String getShortDescriptionWithOrderNumber() {
@@ -121,6 +136,6 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof RecipeStep && getId() == ((RecipeStep) obj).getId();
+        return obj instanceof RecipeStep && getId().intValue() == ((RecipeStep) obj).getId().intValue();
     }
 }
