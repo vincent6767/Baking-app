@@ -51,6 +51,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private TextView mStepDescriptionTextView;
     private ImageView mVideoThumbnailImageView;
     private SimpleExoPlayerView mSimpleExoPlayerView;
+    private long mResumePosition;
     private OnChangeRecipeStepListener mOnChangeRecipeStepListener;
 
     private boolean mFullscreenMode;
@@ -89,10 +90,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mExoPlayer != null) {
-            long playerPosition = mExoPlayer.getCurrentPosition();
-            outState.putLong(PLAYER_POSITION_KEY, playerPosition);
-        }
+        Log.d(LOG_TAG, "OnSaveInstanceState -> Resume position: " + mResumePosition);
+        outState.putLong(PLAYER_POSITION_KEY, mResumePosition);
         super.onSaveInstanceState(outState);
     }
 
@@ -113,11 +112,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             if (mSelectedRecipeStep.hasVideo()) {
                 showPlayerView(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.INVISIBLE);
-                long lastPosition = 0;
                 if (savedInstanceState != null) {
-                    lastPosition = savedInstanceState.getLong(PLAYER_POSITION_KEY);
+                    mResumePosition = savedInstanceState.getLong(PLAYER_POSITION_KEY);
+                    Log.d(LOG_TAG, "onCreateView -> SavedInstanceState: " + mResumePosition);
                 }
-                initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, lastPosition);
+                initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
             } else {
                 hidePlayerview(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.VISIBLE);
@@ -147,17 +146,40 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         }
         return rootView;
     }
+
+
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            Log.d(LOG_TAG, "onStart");
+            initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((Util.SDK_INT <= 23)) {
+            Log.d(LOG_TAG, "onResume");
+            initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause");
         releaseExoPlayer();
     }
 
     private void releaseExoPlayer() {
         if (mExoPlayer != null) {
             mExoPlayer.stop();
+            mResumePosition = mExoPlayer.getContentPosition();
             mExoPlayer.release();
             mExoPlayer = null;
+            Log.d(LOG_TAG, "release Exoplayer!");
         }
     }
     private void showPlayerView(SimpleExoPlayerView playerView) {
@@ -194,11 +216,12 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                     new DefaultExtractorsFactory(),
                     null, null);
             mExoPlayer.prepare(mediaSource);
-            if (position > -1) {
-                mExoPlayer.seekTo(position);
-            }
-            mExoPlayer.addListener(this);
             mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.addListener(this);
+        }
+        if (position > -1) {
+            Log.d(LOG_TAG, "Resuming to " + position);
+            mExoPlayer.seekTo(position);
         }
     }
 

@@ -4,6 +4,7 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.ViewAssertion;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.filters.Suppress;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -23,7 +24,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -31,7 +31,6 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
@@ -63,7 +62,7 @@ public class RecipesListActivityTest {
 
     @Test
     public void clickRecipe_ItemsRecyclerViewItemCountShouldBeGreaterThanZero() {
-        onData(anything()).inAdapterView(withId(R.id.gv_recipes)).atPosition(0).perform(click());
+        onView(withId(R.id.rv_recipes_list)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         onView(withId(R.id.rv_items_list)).check(new RecyclerViewItemCountAssertion(greaterThan(0)));
     }
 
