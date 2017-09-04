@@ -52,6 +52,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private ImageView mVideoThumbnailImageView;
     private SimpleExoPlayerView mSimpleExoPlayerView;
     private long mResumePosition;
+    private Uri mVideoUri;
     private OnChangeRecipeStepListener mOnChangeRecipeStepListener;
 
     private boolean mFullscreenMode;
@@ -109,14 +110,19 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             mSimpleExoPlayerView = rootView.findViewById(R.id.player_view);
             TextView errorMessage = rootView.findViewById(R.id.tv_video_error_message);
             mVideoThumbnailImageView = rootView.findViewById(R.id.iv_video_thumbnail);
-            if (mSelectedRecipeStep.hasVideo()) {
+            if (mSelectedRecipeStep.hasVideo() || mSelectedRecipeStep.hasThumbVideo()) {
                 showPlayerView(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.INVISIBLE);
                 if (savedInstanceState != null) {
                     mResumePosition = savedInstanceState.getLong(PLAYER_POSITION_KEY);
-                    Log.d(LOG_TAG, "onCreateView -> SavedInstanceState: " + mResumePosition);
                 }
-                initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
+                mVideoUri = null;
+                if (mSelectedRecipeStep.hasVideo()) {
+                    mVideoUri = mSelectedRecipeStep.getVideoUri();
+                } else if (mSelectedRecipeStep.hasThumbVideo()) {
+                    mVideoUri = mSelectedRecipeStep.getThumbVideoUri();
+                }
+                initializePlayer(mVideoUri, mSimpleExoPlayerView, mResumePosition);
             } else {
                 hidePlayerview(mSimpleExoPlayerView);
                 errorMessage.setVisibility(View.VISIBLE);
@@ -151,16 +157,18 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23 && mSelectedRecipeStep.hasVideo()) {
-            initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
+        if (Util.SDK_INT > 23 && (mSelectedRecipeStep.hasVideo() || mSelectedRecipeStep.hasThumbVideo())) {
+            Log.d(LOG_TAG, "Video URI: " + mVideoUri.toString());
+            initializePlayer(mVideoUri, mSimpleExoPlayerView, mResumePosition);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23 && mSelectedRecipeStep.hasVideo())) {
-            initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
+        if ((Util.SDK_INT <= 23 && (mSelectedRecipeStep.hasVideo()) || mSelectedRecipeStep.hasThumbVideo())) {
+            Log.d(LOG_TAG, "Video URI: " + mVideoUri.toString());
+            initializePlayer(mVideoUri, mSimpleExoPlayerView, mResumePosition);
         }
     }
 
@@ -181,6 +189,12 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private void showPlayerView(SimpleExoPlayerView playerView) {
         playerView.setVisibility(View.VISIBLE);
         playerView.showController();
+        mVideoThumbnailImageView.setVisibility(View.INVISIBLE);
+    }
+
+    private void hidePlayerview(SimpleExoPlayerView playerView) {
+        playerView.setVisibility(View.INVISIBLE);
+        playerView.hideController();
         Glide.with(getActivity().getApplicationContext())
                 .load(mSelectedRecipeStep.getThumbnailURL())
                 .placeholder(R.drawable.video_placeholder)
@@ -189,12 +203,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mVideoThumbnailImageView);
         mVideoThumbnailImageView.setVisibility(View.VISIBLE);
-    }
-
-    private void hidePlayerview(SimpleExoPlayerView playerView) {
-        playerView.setVisibility(View.INVISIBLE);
-        playerView.hideController();
-        mVideoThumbnailImageView.setVisibility(View.INVISIBLE);
     }
 
     private void initializePlayer(Uri mediaUri, SimpleExoPlayerView playerView, long position) {

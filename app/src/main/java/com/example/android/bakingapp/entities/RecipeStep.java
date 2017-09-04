@@ -112,6 +112,11 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
         String mimeType = URLConnection.guessContentTypeFromName(videoURL);
         return (videoURL != null && !videoURL.isEmpty() && mimeType != null && mimeType.startsWith("video"));
     }
+
+    public boolean hasThumbVideo() {
+        String mimeType = URLConnection.guessContentTypeFromName(thumbnailURL);
+        return (thumbnailURL != null && !thumbnailURL.isEmpty() && mimeType != null && mimeType.startsWith("video"));
+    }
     @Nullable
     public String getThumbnailURL() {
         String mimeType = URLConnection.guessContentTypeFromName(thumbnailURL);
@@ -123,6 +128,20 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
 
     public void setThumbnailURL(@Nullable String thumbnailURL) {
         this.thumbnailURL = thumbnailURL;
+    }
+
+    public String getThumbURLVideo() {
+        if (hasThumbVideo()) {
+            return thumbnailURL;
+        }
+        return "";
+    }
+
+    public Uri getThumbVideoUri() {
+        if (hasThumbVideo()) {
+            return Uri.parse(thumbnailURL);
+        }
+        return null;
     }
 
     public boolean hasThumbnailURL() {
