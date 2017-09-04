@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.net.URLConnection;
 import java.util.Locale;
 
 public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
@@ -18,6 +19,7 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
             return new RecipeStep[size];
         }
     };
+    private static final String LOG_TAG = RecipeStep.class.getSimpleName();
     private Integer id;
     private String shortDescription;
     private String description;
@@ -89,7 +91,10 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
 
     @Nullable
     public String getVideoURL() {
-        return videoURL;
+        if (hasVideo()) {
+            return videoURL;
+        }
+        return "";
     }
 
     public void setVideoURL(@Nullable String videoURL) {
@@ -97,15 +102,23 @@ public class RecipeStep implements Parcelable, Comparable<RecipeStep> {
     }
 
     public Uri getVideoUri() {
-        return Uri.parse(getVideoURL());
+        if (hasVideo()) {
+            return Uri.parse(getVideoURL());
+        }
+        return null;
     }
 
     public boolean hasVideo() {
-        return (getVideoURL() != null && !getVideoURL().isEmpty());
+        String mimeType = URLConnection.guessContentTypeFromName(videoURL);
+        return (videoURL != null && !videoURL.isEmpty() && mimeType != null && mimeType.startsWith("video"));
     }
     @Nullable
     public String getThumbnailURL() {
-        return thumbnailURL;
+        String mimeType = URLConnection.guessContentTypeFromName(thumbnailURL);
+        if (mimeType != null && mimeType.startsWith("image")) {
+            return thumbnailURL;
+        }
+        return "";
     }
 
     public void setThumbnailURL(@Nullable String thumbnailURL) {

@@ -151,8 +151,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23) {
-            Log.d(LOG_TAG, "onStart");
+        if (Util.SDK_INT > 23 && mSelectedRecipeStep.hasVideo()) {
             initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
         }
     }
@@ -160,8 +159,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23)) {
-            Log.d(LOG_TAG, "onResume");
+        if ((Util.SDK_INT <= 23 && mSelectedRecipeStep.hasVideo())) {
             initializePlayer(mSelectedRecipeStep.getVideoUri(), mSimpleExoPlayerView, mResumePosition);
         }
     }
@@ -169,7 +167,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause");
         releaseExoPlayer();
     }
 
@@ -179,7 +176,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             mResumePosition = mExoPlayer.getContentPosition();
             mExoPlayer.release();
             mExoPlayer = null;
-            Log.d(LOG_TAG, "release Exoplayer!");
         }
     }
     private void showPlayerView(SimpleExoPlayerView playerView) {
@@ -220,7 +216,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             mExoPlayer.addListener(this);
         }
         if (position > -1) {
-            Log.d(LOG_TAG, "Resuming to " + position);
             mExoPlayer.seekTo(position);
         }
     }
